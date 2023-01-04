@@ -12,9 +12,9 @@ def getCollection(username):
     for game in collectionDict["items"]["item"]:
         gameDict = {}
         gameDict["id"] = game['@objectid']
-        gameDict["image"] = game["image"]
         gameDict["name"] = game["name"]["#text"]
         gameDict["recScore"] = 0
+        gameDict["own"] = 1
         collection[game['@objectid']] = gameDict
     return collection
 
@@ -33,6 +33,7 @@ def getRelatedGames(game):
 
 
 userCollection = getCollection("snaxib")
+userReccomendations = {}
 
 for game in userCollection:
     #print("Getting Related Games for " + userCollection[game]["name"] + "...")
@@ -41,6 +42,18 @@ for game in userCollection:
     for rec in userCollection[game]["related"]:
         if rec["id"] in userCollection:
             userCollection[rec["id"]]["recScore"] += 1
+        elif rec["id"] in userReccomendations:
+            userReccomendations[rec["id"]]["recScore"] += 1
+        else:
+            gameDict = {}
+            gameDict["id"] = rec["id"]
+            gameDict["name"] = rec["name"]
+            gameDict["recScore"] = 1
+            gameDict["own"] = 0
+            userReccomendations[rec["id"]] = gameDict
 
 for game in userCollection:
-    print(userCollection[game]["name"] + "," + str(userCollection[game]["recScore"]))
+    print(userCollection[game]["name"] + "," + str(userCollection[game]["recScore"]) + "," + str(userCollection[game]["own"]))
+
+for game in userReccomendations:
+    print(userReccomendations[game]["name"] + "," + str(userReccomendations[game]["recScore"]) + "," + str(userReccomendations[game]["own"]))
